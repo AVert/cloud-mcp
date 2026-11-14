@@ -18,3 +18,4 @@ MCP (stdio, Python, low-level `mcp.server.Server`, mcp<2) для API SpaceWeb. �
 Пакет: `specs/` входит в wheel (`force-include`), `DEFAULT_SPECS_DIR` — package-relative при установке.
 Публичный репозиторий: https://github.com/avert/sweb-mcp, ветка `main`, лицензия MIT.
 Публикация в GitHub/OSS — только для собственных opensource-репозиториев (не для пушей в чужие проекты) → `docs/publish-checklist.md`.
+Репозиторий: https://github.com/AVert/sweb-mcp (public, MIT, ветка `main`). Релиз: `git tag -a vX.Y.Z -m ...` + `git push origin vX.Y.Z` → `gh release create vX.Y.Z --notes-file .github/release-notes/vX.Y.Z.md`; тег `v*` собирает GHCR-образ `ghcr.io/avert/sweb-mcp`. Ветка защищена (require PR + CI-чеки), владелец пушит напрямую через `enforce_admins=false`.
