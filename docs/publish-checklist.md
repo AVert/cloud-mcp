@@ -1,7 +1,7 @@
 # Чеклист публикации sweb-mcp в GitHub (open source)
 
-Статус на 14.11.2026: подготовка к публикации выполнена, репозиторий создан локально
-(`git init -b main`), push ещё не делался. Чеклист относится только к **собственным**
+Статус на 14.11.2026: **опубликовано** — https://github.com/AVert/sweb-mcp (public, MIT,
+релиз v0.1.0, GHCR-образ, branch protection, secret scanning). Чеклист относится только к **собственным**
 opensource-репозиториям владельца; пуши/PR в чужие проекты — по правилам этих проектов, не по этому файлу.
 Легенда: `[x]` готово · `[ ]` нужно сделать · `[?]` решение владельца.
 
@@ -81,26 +81,30 @@ opensource-репозиториям владельца; пуши/PR в чужи�
 - [x] Тесты зелёные (31 passed).
 - [x] Ссылки на внутренние правила обезличены (CLAUDE.md → README/Releases).
 
-## 5. GitHub-репозиторий (делает владелец)
+## 5. GitHub-репозиторий — сделано 14.11.2026
 
-- [ ] Создать public-репо: `gh repo create avert/sweb-mcp --public --source=. --push`.
-- [ ] About: описание ≤ 120 симв., topics (`mcp`, `model-context-protocol`, `spaceweb`, `sweb`,
-      `hosting`, `python`, `api-client`, `claude`), homepage (если будет).
-- [ ] Default branch `main`; branch protection: require PR + require CI, запрет force-push.
+- [x] Public-репо: https://github.com/AVert/sweb-mcp (ветка `main`).
+- [x] About: описание 97 симв., topics (`mcp`, `model-context-protocol`, `spaceweb`, `sweb`,
+      `hosting`, `api-client`, `python`, `claude`).
+- [x] Branch protection `main`: require PR (0 approvals — self-merge не блокируется) + required checks
+      `test (py3.11|3.12|3.13)`, `build sdist + wheel`, strict; запрет force-push/удаления,
+      required conversation resolution; `enforce_admins=false` — владелец может пушить напрямую.
 - [x] `.github/workflows/ci.yml` — matrix 3.11/3.12/3.13, `pytest -q`, `ruff check`,
       `ruff format --check`, `python -m build` + `twine check`. Триггеры: push в main, все PR.
 - [x] `.github/workflows/codeql.yml` (Python) — еженедельно + на PR.
 - [x] `.github/dependabot.yml`: `pip` (uv.lock) и `github-actions`, weekly.
-- [ ] `.github/workflows/release.yml`: по тегу `v*` — build sdist/wheel, GitHub Release,
-      аттач артефактов (не делали: сначала первый push).
+- [~] `.github/workflows/release.yml` — не делали: релиз собирается вручную (`git tag` + `gh release`),
+      исходники wheel/sdist GitHub отдаёт из тега. Добавить, если понадобится автосборка.
 - [x] Шаблоны: `.github/ISSUE_TEMPLATE/bug_report.yml`, `feature_request.yml`,
       `PULL_REQUEST_TEMPLATE.md`.
 - [ ] (опц.) `CODEOWNERS`, `FUNDING.yml`, `CITATION.cff`.
-- [ ] Настройки безопасности: secret scanning + push protection, Dependabot alerts,
-      private vulnerability reporting (вкл. — связка с SECURITY.md).
-- [ ] Релиз `v0.1.0`: тег, release notes из `.github/release-notes/v0.1.0.md`.
-- [ ] (опц.) PyPI trusted publishing (OIDC) + бейдж версии.
-- [ ] (опц.) GHCR-образ `ghcr.io/avert/sweb-mcp`, multi-arch amd64/arm64.
+- [x] Настройки безопасности: secret scanning + push protection, Dependabot alerts/security updates,
+      private vulnerability reporting.
+- [x] Релиз `v0.1.0`: тег + GitHub Release из `.github/release-notes/v0.1.0.md`.
+- [ ] (опц.) PyPI trusted publishing (OIDC) + бейдж версии — нужен логин владельца на PyPI.
+- [x] GHCR-образ `ghcr.io/avert/sweb-mcp`, multi-arch amd64/arm64 (`.github/workflows/docker.yml`,
+      по тегу `v*` и вручную).
+- [x] `delete_branch_on_merge` включён.
 
 ## 6. Проверка «с нуля» перед публикацией
 
@@ -111,12 +115,12 @@ opensource-репозиториям владельца; пуши/PR в чужи�
 - [x] `grep -rn -E "password\s*=\s*['\"][^'\"]{4,}"` по дереву — чисто; личные имена/пути/почты
       в индексе отсутствуют.
 - [x] `git log --stat` — нет случайных файлов, нет `.env`, нет `accounts.json`.
-- [ ] Ссылки в README резолвятся после создания репо, LICENSE рендерится, бейджи зелёные.
+- [x] Ссылки в README резолвятся, LICENSE рендерится как MIT, CI-бейдж зелёный.
 - [ ] (важно) креды, которые когда-либо попадали в локальные логи opencode, в репо не попали;
       при сомнении — сменить пароль клиентского аккаунта у SpaceWeb.
 
 ## 7. После публикации
 
 - [ ] Включить watch на issues/security, ответить на первый фидбек.
-- [ ] Зафиксировать в CLAUDE.md: репо, ветка, как выпускать релиз.
+- [x] Зафиксировать в CLAUDE.md: репо, ветка, как выпускать релиз.
 - [ ] (опц.) анонс: r/mcp, awesome-mcp-servers, Хабр.
