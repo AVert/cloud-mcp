@@ -1,4 +1,5 @@
 """Settings, read from environment variables (see .env.example)."""
+
 from __future__ import annotations
 
 import json
@@ -7,7 +8,10 @@ from dataclasses import dataclass
 from pathlib import Path
 
 DEFAULT_API_URL = "https://api.sweb.ru"
-DEFAULT_SPECS_DIR = Path(__file__).resolve().parents[2] / "specs"
+_PACKAGE_SPECS = Path(__file__).resolve().parent / "specs"  # installed wheel
+DEFAULT_SPECS_DIR = (
+    _PACKAGE_SPECS if _PACKAGE_SPECS.is_dir() else Path(__file__).resolve().parents[2] / "specs"
+)
 _TRUE = {"1", "true", "yes", "on"}
 
 
@@ -24,7 +28,8 @@ class Account:
 
 
 def _parse_accounts(raw: str) -> tuple[Account, ...]:
-    """SWEB_ACCOUNTS_FILE: {"name": {"login": "...", "password": "..."}} or {"name": "login:password"}."""
+    """SWEB_ACCOUNTS_FILE: {"name": {"login": "...", "password": "..."}}
+    or {"name": "login:password"}."""
     data = json.loads(raw)
     if not isinstance(data, dict):
         raise ValueError("SWEB_ACCOUNTS_FILE must contain a JSON object")

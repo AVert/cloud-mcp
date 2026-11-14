@@ -13,7 +13,10 @@ BASE = "https://api.sweb.ru"
 
 
 def rpc(result=None, error=None):
-    return httpx.Response(200, json={"jsonrpc": "2.0", "id": "1", **({"error": error} if error else {"result": result})})
+    return httpx.Response(
+        200,
+        json={"jsonrpc": "2.0", "id": "1", **({"error": error} if error else {"result": result})},
+    )
 
 
 @respx.mock
@@ -29,7 +32,9 @@ async def test_login_and_call(settings):
 @respx.mock
 async def test_relogin_on_session_expired(settings):
     respx.post(f"{BASE}/notAuthorized/").mock(side_effect=[rpc("T1"), rpc("T2")])
-    call = respx.post(f"{BASE}/pay").mock(side_effect=[rpc(error={"code": -32603, "message": "expired"}), rpc(1)])
+    call = respx.post(f"{BASE}/pay").mock(
+        side_effect=[rpc(error={"code": -32603, "message": "expired"}), rpc(1)]
+    )
     assert await SwebClient(settings).call("/pay", "index") == 1
     assert call.calls[1].request.headers["authorization"] == "Bearer T2"
 
@@ -37,11 +42,13 @@ async def test_relogin_on_session_expired(settings):
 @respx.mock
 async def test_errors(settings):
     respx.post(f"{BASE}/notAuthorized/").mock(return_value=rpc("T"))
-    respx.post(f"{BASE}/pay").mock(side_effect=[
-        httpx.Response(500, text="boom"),
-        rpc(error={"code": 5, "message": "bad"}),
-        rpc({"extendedResult": {"code": 0, "message": "nope"}}),
-    ])
+    respx.post(f"{BASE}/pay").mock(
+        side_effect=[
+            httpx.Response(500, text="boom"),
+            rpc(error={"code": 5, "message": "bad"}),
+            rpc({"extendedResult": {"code": 0, "message": "nope"}}),
+        ]
+    )
     c = SwebClient(settings)
     for code in (500, 5, "extendedResult"):
         with pytest.raises(SwebError) as e:
@@ -62,7 +69,13 @@ async def test_server_end_to_end(settings):
         tools = (await s.list_tools()).tools
         assert len(tools) == 276 + 5
         names = {t.name for t in tools}
-        assert {"vps_index", "vps_ip_addLocal", "sweb_call", "sweb_accounts", "sweb_use_account"} <= names
+        assert {
+            "vps_index",
+            "vps_ip_addLocal",
+            "sweb_call",
+            "sweb_accounts",
+            "sweb_use_account",
+        } <= names
 
         r = await s.call_tool("vps_index", {})
         assert not r.isError and "billingId" in r.content[0].text
@@ -71,7 +84,10 @@ async def test_server_end_to_end(settings):
         assert r.isError and "confirm" in r.content[0].text
         assert vps.call_count == 1
 
-        r = await s.call_tool("sweb_call", {"path": "/vps", "method": "reboot", "params": {"billingId": "x"}, "confirm": True})
+        r = await s.call_tool(
+            "sweb_call",
+            {"path": "/vps", "method": "reboot", "params": {"billingId": "x"}, "confirm": True},
+        )
         assert not r.isError and vps.call_count == 2
 
         r = await s.call_tool("sweb_list_methods", {"kind": "paid", "group": "vps"})
@@ -80,7 +96,9 @@ async def test_server_end_to_end(settings):
 
 @respx.mock
 async def test_readonly_blocks(specs_dir):
-    ro = Settings(accounts=(Account("default", "u", "p"),), default_account="default", specs_dir=specs_dir)
+    ro = Settings(
+        accounts=(Account("default", "u", "p"),), default_account="default", specs_dir=specs_dir
+    )
     async with connect(build_server(ro), raise_exceptions=False) as s:
         r = await s.call_tool("vps_rename", {"billingId": "x", "alias": "n", "confirm": True})
         assert r.isError and "SWEB_READONLY" in r.content[0].text
@@ -88,15 +106,23 @@ async def test_readonly_blocks(specs_dir):
 
 # --- rate limiting / retries -------------------------------------------------
 
+
 def fast(**kw):
-    return Settings(accounts=(Account("default", "u", "p"),), default_account="default",
-                    min_interval=0, backoff_base=0, **kw)
+    return Settings(
+        accounts=(Account("default", "u", "p"),),
+        default_account="default",
+        min_interval=0,
+        backoff_base=0,
+        **kw,
+    )
 
 
 @respx.mock
 async def test_429_retried_even_for_writes():
     respx.post(f"{BASE}/notAuthorized/").mock(return_value=rpc("T"))
-    call = respx.post(f"{BASE}/vps").mock(side_effect=[httpx.Response(429, headers={"Retry-After": "0"}), rpc(1)])
+    call = respx.post(f"{BASE}/vps").mock(
+        side_effect=[httpx.Response(429, headers={"Retry-After": "0"}), rpc(1)]
+    )
     assert await SwebClient(fast()).call("/vps", "rename", {}, retry=False) == 1
     assert call.call_count == 2
 
@@ -104,7 +130,9 @@ async def test_429_retried_even_for_writes():
 @respx.mock
 async def test_503_and_network_retried_only_for_reads():
     respx.post(f"{BASE}/notAuthorized/").mock(return_value=rpc("T"))
-    call = respx.post(f"{BASE}/vps").mock(side_effect=[httpx.Response(503), httpx.ConnectError("x"), rpc([])])
+    call = respx.post(f"{BASE}/vps").mock(
+        side_effect=[httpx.Response(503), httpx.ConnectError("x"), rpc([])]
+    )
     assert await SwebClient(fast()).call("/vps", "index", {}, retry=True) == []
     assert call.call_count == 3
     call.reset()
@@ -126,6 +154,7 @@ async def test_retries_exhausted():
 @respx.mock
 async def test_concurrency_cap():
     import asyncio
+
     respx.post(f"{BASE}/notAuthorized/").mock(return_value=rpc("T"))
     cur = peak = 0
 
@@ -147,10 +176,17 @@ async def test_concurrency_cap():
 @respx.mock
 async def test_min_interval_paces_requests():
     import time
+
     respx.post(f"{BASE}/notAuthorized/").mock(return_value=rpc("T"))
     respx.post(f"{BASE}/vps").mock(return_value=rpc(1))
-    c = SwebClient(Settings(accounts=(Account("default", "u", "p"),), default_account="default",
-                             min_interval=0.05, backoff_base=0))
+    c = SwebClient(
+        Settings(
+            accounts=(Account("default", "u", "p"),),
+            default_account="default",
+            min_interval=0.05,
+            backoff_base=0,
+        )
+    )
     t0 = time.monotonic()
     for _ in range(4):
         await c.call("/vps", "index", {})

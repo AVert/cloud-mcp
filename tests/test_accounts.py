@@ -12,12 +12,18 @@ BASE = "https://api.sweb.ru"
 
 
 def rpc(result=None, error=None):
-    return httpx.Response(200, json={"jsonrpc": "2.0", "id": "1", **({"error": error} if error else {"result": result})})
+    return httpx.Response(
+        200,
+        json={"jsonrpc": "2.0", "id": "1", **({"error": error} if error else {"result": result})},
+    )
 
 
 def test_parse_accounts_forms():
     accs = _parse_accounts(json.dumps({"ours": {"login": "a", "password": "b"}, "client": "c:d"}))
-    assert [(a.name, a.login, a.password) for a in accs] == [("ours", "a", "b"), ("client", "c", "d")]
+    assert [(a.name, a.login, a.password) for a in accs] == [
+        ("ours", "a", "b"),
+        ("client", "c", "d"),
+    ]
 
 
 def test_env_accounts_file(tmp_path, monkeypatch):
@@ -52,8 +58,11 @@ async def test_server_routes_by_account():
 
     respx.post(f"{BASE}/notAuthorized/").mock(side_effect=auth)
     vps = respx.post(f"{BASE}/vps").mock(return_value=rpc([]))
-    s = Settings(accounts=(Account("a", "ua", "pa"), Account("b", "ub", "pb")),
-                 default_account="a", min_interval=0)
+    s = Settings(
+        accounts=(Account("a", "ua", "pa"), Account("b", "ub", "pb")),
+        default_account="a",
+        min_interval=0,
+    )
     async with connect(build_server(s), raise_exceptions=False) as sess:
         names = {t.name for t in (await sess.list_tools()).tools}
         assert {"sweb_accounts", "sweb_use_account"} <= names

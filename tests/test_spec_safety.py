@@ -10,8 +10,11 @@ from sweb_mcp.spec import in_groups, load_methods
 
 
 def test_all_methods_covered(specs_dir):
-    raw = {(json.loads(f.read_text())["servers"][0]["url"].split("api.sweb.ru")[1], m["name"])
-           for f in specs_dir.glob("*.json") for m in json.loads(f.read_text())["methods"]}
+    raw = {
+        (json.loads(f.read_text())["servers"][0]["url"].split("api.sweb.ru")[1], m["name"])
+        for f in specs_dir.glob("*.json")
+        for m in json.loads(f.read_text())["methods"]
+    }
     ms = load_methods(specs_dir)
     assert len(ms) == len(raw) == 276
     assert len({m.tool_name for m in ms}) == len(ms)  # no tool name collisions
@@ -23,12 +26,21 @@ def test_tool_names_and_schemas_valid(specs_dir):
         Draft202012Validator.check_schema(m.input_schema(with_confirm=m.kind != "read"))
 
 
-@pytest.mark.parametrize("path,name,kind", [
-    ("/vps", "index", "read"), ("/vps", "createEnable", "read"), ("/vps", "reboot", "destructive"),
-    ("/vps", "create", "paid"), ("/vps", "rename", "write"), ("/domains", "regList", "paid"),
-    ("/domains", "removeList", "destructive"), ("/vh/mail", "getMailQuota", "read"),
-    ("/vh/hosting", "databaseGetList", "read"), ("/monitoring/checks", "activateList", "write"),
-])
+@pytest.mark.parametrize(
+    "path,name,kind",
+    [
+        ("/vps", "index", "read"),
+        ("/vps", "createEnable", "read"),
+        ("/vps", "reboot", "destructive"),
+        ("/vps", "create", "paid"),
+        ("/vps", "rename", "write"),
+        ("/domains", "regList", "paid"),
+        ("/domains", "removeList", "destructive"),
+        ("/vh/mail", "getMailQuota", "read"),
+        ("/vh/hosting", "databaseGetList", "read"),
+        ("/monitoring/checks", "activateList", "write"),
+    ],
+)
 def test_classify(path, name, kind):
     assert classify(path, name) == kind
 

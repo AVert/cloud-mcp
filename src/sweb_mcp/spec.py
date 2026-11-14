@@ -1,4 +1,5 @@
 """Load OpenRPC snapshots from specs/ and turn methods into MCP tool definitions."""
+
 from __future__ import annotations
 
 import json
@@ -37,7 +38,12 @@ class Method:
         required = [p["name"] for p in self.params if p.get("required")]
         if with_confirm:
             required.append("confirm")
-        return {"type": "object", "properties": props, "required": required, "additionalProperties": False}
+        return {
+            "type": "object",
+            "properties": props,
+            "required": required,
+            "additionalProperties": False,
+        }
 
 
 def _resolve(node: Any, doc: dict[str, Any]) -> Any:
@@ -73,8 +79,15 @@ def load_methods(specs_dir: Path, overrides_path: Path | None = None) -> list[Me
             params = tuple(
                 {**p, "schema": _resolve(p.get("schema", {}), doc)} for p in m.get("params", [])
             )
-            out.append(Method(path, m["name"], m.get("description", ""),
-                              classify(path, m["name"], overrides), params))
+            out.append(
+                Method(
+                    path,
+                    m["name"],
+                    m.get("description", ""),
+                    classify(path, m["name"], overrides),
+                    params,
+                )
+            )
     return out
 
 
