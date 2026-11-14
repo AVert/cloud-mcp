@@ -4,6 +4,7 @@ Kinds: read < write < destructive / paid. Order: overrides -> PAID table ->
 destructive regex -> read regex -> write (default, conservative).
 Manual overrides: JSON file {"/vps:reboot": "write", ...} via SWEB_OVERRIDES.
 """
+
 from __future__ import annotations
 
 import json
@@ -16,27 +17,56 @@ KINDS = ("read", "write", "destructive", "paid")
 
 # Orders / money / plan changes (billable). key = "<path>:<method>".
 PAID = {
-    "/vps:create", "/vps:createFirst", "/vps:copy", "/vps:changePlan",
-    "/balancer:create", "/balancer:edit",
-    "/dbaas:createInstance", "/dbaas:editInstance",
-    "/domains:reg", "/domains:regList", "/domains:prolong", "/domains:prolongList",
+    "/vps:create",
+    "/vps:createFirst",
+    "/vps:copy",
+    "/vps:changePlan",
+    "/balancer:create",
+    "/balancer:edit",
+    "/dbaas:createInstance",
+    "/dbaas:editInstance",
+    "/domains:reg",
+    "/domains:regList",
+    "/domains:prolong",
+    "/domains:prolongList",
     "/domains/bonus:buy",
-    "/vh/ddg:enable", "/monitoring:enable", "/monitoring:change",
-    "/vh/partnerProgram:createOrderVh", "/vh/partnerProgram:createOrderVip",
-    "/vh/partnerProgram:createOrderVps", "/vh/partnerProgram:sendWithdrawalOrder",
-    "/vh/ssl:prolongCertificate", "/vps/ssl:orderSubmit",
-    "/vps/ip:add", "/vps/ip:addProtected", "/vps/remoteBackup:create",
+    "/vh/ddg:enable",
+    "/monitoring:enable",
+    "/monitoring:change",
+    "/vh/partnerProgram:createOrderVh",
+    "/vh/partnerProgram:createOrderVip",
+    "/vh/partnerProgram:createOrderVps",
+    "/vh/partnerProgram:sendWithdrawalOrder",
+    "/vh/ssl:prolongCertificate",
+    "/vps/ssl:orderSubmit",
+    "/vps/ip:add",
+    "/vps/ip:addProtected",
+    "/vps/remoteBackup:create",
 }
 # Names that look mutating but only read.
-READ_EXPLICIT = {"createEnable", "checkLogin", "regAvailable", "validateUsers", "getPmaUser",
-                 "enableInfo", "standardPlans", "vipPlans", "vpsOsConfig", "plans", "logs", "load"}
+READ_EXPLICIT = {
+    "createEnable",
+    "checkLogin",
+    "regAvailable",
+    "validateUsers",
+    "getPmaUser",
+    "enableInfo",
+    "standardPlans",
+    "vipPlans",
+    "vpsOsConfig",
+    "plans",
+    "logs",
+    "load",
+}
 
 _DESTRUCTIVE = re.compile(
     r"^(remove|del|delete|drop|reinstall|restore|move|powerOff|reboot|databaseMysqlImport)"
-    r"|Delete|Remove|Drop|Restore|Import")
+    r"|Delete|Remove|Drop|Restore|Import"
+)
 _READ = re.compile(
     r"^(index|info|history|getinfo|serverInfo|isRunning|price\w*|count\w*|download\w*)$"
-    r"|^(get|is)|Get[A-Z]|(Info|Config)$")
+    r"|^(get|is)|Get[A-Z]|(Info|Config)$"
+)
 _READ_LIST = re.compile(r"List$")
 _LIST_MUTATORS = re.compile(r"^(reg|move|remove|prolong|changeProlong|activate|deactivate)")
 

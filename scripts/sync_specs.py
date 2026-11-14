@@ -5,6 +5,7 @@ The site is a React SPA that inlines one OpenRPC document per API object in its 
 bundle as `JSON.parse("...")`. Logic ported from sanchpet/sweb-go-sdk (MIT, api-spec/gen).
 Usage: sync_specs.py [--check]   (--check: report drift, write nothing)
 """
+
 from __future__ import annotations
 
 import argparse
@@ -40,7 +41,7 @@ def extract(src: str) -> list[dict]:
             j += 2 if src[j] == "\\" else 1
         if j >= len(src):
             break
-        lit, i = src[p:j + 1], j + 1
+        lit, i = src[p : j + 1], j + 1
         try:
             obj = json.loads(json.loads(lit))
         except ValueError:
@@ -65,7 +66,9 @@ def main() -> int:
     check = ap.parse_args().check
     with httpx.Client(timeout=60, trust_env=False, follow_redirects=True) as c:
         files = json.loads(fetch(c, DOCS_URL + "/asset-manifest.json"))["files"].values()
-        urls = sorted({(DOCS_URL + v if v.startswith("/") else v) for v in files if v.endswith(".js")})
+        urls = sorted(
+            {(DOCS_URL + v if v.startswith("/") else v) for v in files if v.endswith(".js")}
+        )
         blob = "\n".join(fetch(c, u) for u in urls)
     docs = extract(blob)
     if not docs:

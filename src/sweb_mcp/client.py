@@ -1,4 +1,5 @@
 """Async JSON-RPC 2.0 client for api.sweb.ru (token auth, auto re-login)."""
+
 from __future__ import annotations
 
 import asyncio
@@ -54,8 +55,9 @@ class SwebClient:
             return min(float(ra), MAX_WAIT)
         return min(self._s.backoff_base * 2**attempt, MAX_WAIT)
 
-    async def _post(self, path: str, method: str, params: dict[str, Any], auth: bool,
-                    retry: bool = False) -> Any:
+    async def _post(
+        self, path: str, method: str, params: dict[str, Any], auth: bool, retry: bool = False
+    ) -> Any:
         headers = {"Content-Type": "application/json", "Accept": "application/json"}
         if auth and self._token:
             headers["Authorization"] = f"Bearer {self._token}"
@@ -100,17 +102,22 @@ class SwebClient:
             if self._token != stale:  # someone refreshed meanwhile
                 return
             if not (self._s.login and self._s.password):
-                raise SwebError("config", "account has no login/password (check SWEB_ACCOUNTS_FILE)")
+                raise SwebError(
+                    "config", "account has no login/password (check SWEB_ACCOUNTS_FILE)"
+                )
             token = await self._post(
-                "/notAuthorized/", "getToken",
-                {"login": self._s.login, "password": self._s.password}, auth=False,
+                "/notAuthorized/",
+                "getToken",
+                {"login": self._s.login, "password": self._s.password},
+                auth=False,
             )
             if not isinstance(token, str) or not token:
                 raise SwebError("auth", "getToken returned no token")
             self._token = token
 
-    async def call(self, path: str, method: str, params: dict[str, Any] | None = None,
-                   retry: bool = False) -> Any:
+    async def call(
+        self, path: str, method: str, params: dict[str, Any] | None = None, retry: bool = False
+    ) -> Any:
         params = params or {}
         if not self._token:
             await self._login("")

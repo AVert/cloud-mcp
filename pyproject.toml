@@ -2,14 +2,53 @@
 name = "sweb-mcp"
 version = "0.1.0"
 description = "MCP server for the SpaceWeb (sweb.ru) JSON-RPC API"
+readme = "README.md"
 requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Alexey Vertinsky" }]
+keywords = [
+    "mcp",
+    "model-context-protocol",
+    "spaceweb",
+    "sweb",
+    "hosting",
+    "api-client",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
 dependencies = ["mcp>=1.12,<2", "httpx>=0.27"]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "pytest-asyncio>=0.23", "respx>=0.21"]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.23",
+    "respx>=0.21",
+    "jsonschema>=4",
+    "ruff>=0.6",
+    "pre-commit>=3",
+    "build>=1.2",
+    "twine>=5",
+]
 
 [project.scripts]
 sweb-mcp = "sweb_mcp.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/avert/sweb-mcp"
+Repository = "https://github.com/avert/sweb-mcp"
+Issues = "https://github.com/avert/sweb-mcp/issues"
+Changelog = "https://github.com/avert/sweb-mcp/releases"
 
 [build-system]
 requires = ["hatchling"]
@@ -18,7 +57,20 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src/sweb_mcp"]
 
+# The committed spec snapshot ships with the package, so an installed server
+# works without SWEB_SPECS_DIR.
+[tool.hatch.build.targets.wheel.force-include]
+"specs" = "sweb_mcp/specs"
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
 pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests", "scripts"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
