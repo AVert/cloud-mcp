@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+.venv.*/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Local environment and credentials (never commit)
+.env
+.env.local
+accounts.json
+accounts*.json
+
+# Editors / OS / local agent tooling
+.claude/
+.idea/
+.vscode/
+.DS_Store
+
+# Spec sync scratch space
+.specs-cache/

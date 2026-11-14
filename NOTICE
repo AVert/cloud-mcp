@@ -1,0 +1,2 @@
+specs/*.json derived from the SpaceWeb docs site; extraction logic and initial snapshot from
+https://github.com/sanchpet/sweb-go-sdk (MIT, (c) its authors).
