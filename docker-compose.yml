@@ -1,0 +1,9 @@
+# stdio MCP server: started on demand by the MCP client, not a long-running service.
+#   docker compose run --rm -T sweb-mcp
+services:
+  sweb-mcp:
+    build: .
+    image: sweb-mcp:latest
+    stdin_open: true
+    env_file: .env
+    network_mode: bridge
