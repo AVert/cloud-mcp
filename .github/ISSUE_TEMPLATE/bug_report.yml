@@ -1,0 +1,63 @@
+name: Bug report
+description: Something does not work as documented
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Please **do not paste credentials, tokens or
+        account JSON files** — redact logins/passwords before posting.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: Actual behaviour, including the exact error text (`[code] message`).
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Which tool was called (or `sweb_call` path+method), with which parameters (redacted).
+      placeholder: |
+        1. Start the server: uv run --env-file .env sweb-mcp
+        2. Call tool vps_index with {}
+        3. See error ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: sweb-mcp version / commit
+      placeholder: "0.1.0 or git sha"
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Python version, MCP client (Claude Code / OpenCode / Cursor / other), Docker or local.
+      placeholder: "Ubuntu 24.04, Python 3.13, Claude Code, local uv"
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Server logs (stderr)
+      description: Redact logins, passwords, tokens and account names.
+      render: text
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I removed all credentials and personal data from this report.
+          required: true
+        - label: I searched existing issues before opening this one.
+          required: true
