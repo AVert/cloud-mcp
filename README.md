@@ -47,13 +47,17 @@ uv run --env-file .env sweb-mcp
 
 **Docker**
 ```bash
+# готовый образ (multi-arch, теги vX.Y.Z / latest)
+docker run -i --rm --env-file .env ghcr.io/avert/sweb-mcp:latest
+
+# или собрать из клона
 docker build -t sweb-mcp .
 docker run -i --rm --env-file .env sweb-mcp
 # или в репозитории:
 docker compose run --rm -T sweb-mcp
 ```
 
-Пакет в PyPI пока не публикуется; устанавливайте из git или из локального клона.
+Пакет в PyPI пока не публикуется; устанавливайте из git, из локального клона или из образа GHCR.
 
 ## Примеры read-вызовов
 

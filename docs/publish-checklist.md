@@ -18,8 +18,8 @@ opensource-репозиториям владельца; пуши/PR в чужи�
       ссылки в CLAUDE.md/README убраны (история — GitHub Releases).
 - [x] **Имя и владелец репо** — `github.com/avert/sweb-mcp` (плейсхолдеры `OWNER` заменены).
 - [x] **Лицензия** — MIT + расширенный NOTICE.
-- [ ] **Публиковать ли в PyPI** (`sweb-mcp`) — сейчас нет; `pyproject.toml` к публикации готов
-      (`build` + `twine check` проходят), нужен trusted publishing при решении публиковать.
+- [-] **Публиковать ли в PyPI** — отложено (владелец, 14.11.2026): релиз только git/GHCR.
+      `pyproject.toml` к публикации готов (`build` + `twine check` проходят).
 
 ## 1. Юридические файлы
 
@@ -101,9 +101,11 @@ opensource-репозиториям владельца; пуши/PR в чужи�
 - [x] Настройки безопасности: secret scanning + push protection, Dependabot alerts/security updates,
       private vulnerability reporting.
 - [x] Релиз `v0.1.0`: тег + GitHub Release из `.github/release-notes/v0.1.0.md`.
-- [ ] (опц.) PyPI trusted publishing (OIDC) + бейдж версии — нужен логин владельца на PyPI.
+- [-] (опц.) PyPI — решение владельца 14.11.2026: **отложено**, релиз только через git/GHCR.
+      `pyproject.toml` к публикации готов; при возврате к вопросу нужен trusted publishing (OIDC)
+      + pending publisher на PyPI.
 - [x] GHCR-образ `ghcr.io/avert/sweb-mcp`, multi-arch amd64/arm64 (`.github/workflows/docker.yml`,
-      по тегу `v*` и вручную).
+      по тегу `v*` и вручную); проверено — тянется анонимно (`:latest`, `:0.1`, `:0.1.0`).
 - [x] `delete_branch_on_merge` включён.
 
 ## 6. Проверка «с нуля» перед публикацией
