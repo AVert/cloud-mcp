@@ -5,6 +5,9 @@
 [![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue.svg)](pyproject.toml)
 [![MCP](https://img.shields.io/badge/MCP-server-6f42c1.svg)](https://modelcontextprotocol.io)
 
+**SpaceWeb MCP · sweb mcp · MCP-сервер хостинга SpaceWeb** — если вы искали MCP-сервер для
+SpaceWeb, это он.
+
 MCP-сервер (stdio) для клиентского API SpaceWeb (sweb.ru): JSON-RPC 2.0, 29 объектов,
 **276 уникальных методов** — все доступны как tools `<объект>_<метод>` (`vps_index`,
 `domains_dns_editTxt`, `vh_mail_createMbox`, …) + 5 meta-tools: `sweb_list_methods`,
