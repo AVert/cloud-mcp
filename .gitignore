@@ -20,7 +20,7 @@ accounts.json
 accounts*.json
 
 # Editors / OS / local agent tooling
-.claude/
+.claude/settings.local.json
 .idea/
 .vscode/
 .DS_Store
