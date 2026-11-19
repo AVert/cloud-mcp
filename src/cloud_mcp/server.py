@@ -96,7 +96,10 @@ def build_server(settings: Settings | None = None):
                     "required": ["query"],
                     "properties": {
                         "query": {"type": "string"},
-                        "provider": {"type": "string", "description": "timeweb|selectel|tilda"},
+                        "provider": {
+                            "type": "string",
+                            "description": "sweb|timeweb|selectel|tilda",
+                        },
                         "product": {"type": "string", "description": "selectel product slug"},
                         "kind": {"type": "string", "description": "read|write|destructive|paid"},
                         "top": {"type": "integer", "description": "default 5"},
