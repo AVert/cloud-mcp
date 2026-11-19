@@ -4,14 +4,9 @@ on:
   push:
     branches: [main]
   pull_request:
-  workflow_dispatch:
-
-permissions:
-  contents: read
 
 jobs:
   test:
-    name: test (py${{ matrix.python-version }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -19,24 +14,28 @@ jobs:
         python-version: ["3.11", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
-          enable-cache: true
-      - run: uv sync --extra dev
-      - run: uv run --extra dev ruff check .
-      - run: uv run --extra dev ruff format --check .
-      - run: uv run --extra dev python -m pytest -q
+      - name: Install
+        run: pip install -e '.[dev]'
+      - name: Ruff lint
+        run: ruff check src scripts tests
+      - name: Ruff format
+        run: ruff format --check src scripts tests
+      - name: Pytest
+        run: python -m pytest tests -q
 
   build:
-    name: build sdist + wheel
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.13"
-          enable-cache: true
-      - run: uv sync --extra dev
-      - run: uv run --extra dev python -m build
-      - run: uv run --extra dev twine check dist/*
+      - name: Install build tools
+        run: pip install build twine
+      - name: Build sdist and wheel
+        run: python -m build
+      - name: Twine check
+        run: twine check dist/*
