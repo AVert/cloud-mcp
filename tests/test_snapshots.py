@@ -105,10 +105,9 @@ def test_no_token_shaped_examples_in_snapshots():
     sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
     from sync_specs import scrub_examples
 
-    assert scrub_examples({"example": "000000000:EXAMPLE"}) == {
-        "example": "000000000:EXAMPLE"
-    }
-    assert scrub_examples({"s": "123456789:AAH..."}) == {"s": "123456789:AAH..."}
+    fake = "987654321:" + "A" * 35
+    assert scrub_examples({"example": fake}) == {"example": "000000000:EXAMPLE"}
+    assert scrub_examples({"s": "987654321:AAH..."}) == {"s": "987654321:AAH..."}
 
     pattern = re.compile(r"\d{8,10}:[A-Za-z0-9_-]{35}")
     specs = Path(__file__).resolve().parents[1] / "specs"
