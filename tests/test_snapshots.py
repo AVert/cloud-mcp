@@ -95,3 +95,26 @@ def test_tilda_snapshot_shape():
     assert raw["auth"] == "tilda_keys"
     assert raw["operations"] == len(raw["operations_list"]) == 10
     assert all(op["kind"] == "read" for op in raw["operations_list"])
+
+
+def test_no_token_shaped_examples_in_snapshots():
+    import re
+    import sys
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+    from sync_specs import scrub_examples
+
+    assert scrub_examples({"example": "000000000:EXAMPLE"}) == {
+        "example": "000000000:EXAMPLE"
+    }
+    assert scrub_examples({"s": "123456789:AAH..."}) == {"s": "123456789:AAH..."}
+
+    pattern = re.compile(r"\d{8,10}:[A-Za-z0-9_-]{35}")
+    specs = Path(__file__).resolve().parents[1] / "specs"
+    offenders = [
+        str(path.relative_to(specs))
+        for path in specs.rglob("*.json")
+        if pattern.search(path.read_text(encoding="utf-8"))
+    ]
+    assert offenders == []

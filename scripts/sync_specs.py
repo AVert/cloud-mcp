@@ -34,6 +34,7 @@ SWEB_DOCS_URL = "https://apidoc.sweb.ru"
 SWEB_API = "https://api.sweb.ru"
 SWEB_NEEDLE = "JSON.parse("
 
+BOT_TOKEN_EXAMPLE = re.compile(r"^\d{8,10}:[A-Za-z0-9_-]{35}$")
 DEFAULT_REGION = "ru-2"
 REGION_TOKEN = re.compile(r"(?:^|\.)([a-z]{2}-\d+)\.")
 DOCS_URLS = "https://docs.selectel.ru/api/urls/"
@@ -176,6 +177,7 @@ def timeweb_operations() -> tuple[dict[str, Any], list[Operation]]:
     )
     for op in operations:
         op.kind = classify(op)
+        op.body = scrub_examples(op.body)
     meta = {
         "provider": "timeweb",
         "title": (doc.get("info") or {}).get("title") or "Timeweb Cloud",
@@ -216,6 +218,7 @@ def selectel_operations(
         )
         for op in operations:
             op.kind = classify(op)
+            op.body = scrub_examples(op.body)
         if not operations:
             skipped.append(slug)
             continue
@@ -344,6 +347,18 @@ def sweb_operations() -> tuple[dict[str, Any], list[dict[str, Any]]]:
         "operations": len(operations),
     }
     return meta, operations
+
+
+def scrub_examples(node: Any) -> Any:
+    """Providers ship illustrative tokens in their docs; GitHub secret scanning then flags the
+    snapshot. Replace anything shaped like a bot token with an obvious placeholder."""
+    if isinstance(node, dict):
+        return {key: scrub_examples(value) for key, value in node.items()}
+    if isinstance(node, list):
+        return [scrub_examples(item) for item in node]
+    if isinstance(node, str) and BOT_TOKEN_EXAMPLE.match(node):
+        return "000000000:EXAMPLE"
+    return node
 
 
 def write_json(path: Path, payload: Any) -> bool:
